@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+.python-version
+
+# uv
+.uv/
+
+# Environments and secrets — never commit
+.env
+.env.*
+*.env
+secrets.*
+*.key
+*.pem
+
+# Databases and large data (the eval DB is on Zenodo — see README)
+*.duckdb
+*.duckdb.wal
+*.sqlite
+*.db
+sessions.db
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Agent / tooling scratch
+.claude/
+.mcp.json
+.mcp.json.*

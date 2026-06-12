@@ -1,0 +1,30 @@
+{
+  "concept_sets": [
+    {
+      "name": "Type 2 Diabetes",
+      "domain": "Condition",
+      "concepts": [{"concept_id": 201826, "include_descendants": true}]
+    },
+    {
+      "name": "HbA1c",
+      "domain": "Measurement",
+      "concepts": [{"concept_id": 3004410, "include_descendants": true}]
+    }
+  ],
+  "primary_criteria": {
+    "concept_set": "Type 2 Diabetes",
+    "first_occurrence": true
+  },
+  "inclusion_rules": [
+    {
+      "name": "HbA1c in adults",
+      "concept_set": "HbA1c",
+      "temporal": {"days_before": 365, "days_after": 0},
+      "attributes": [
+        {"type": "value_as_number", "op": "gte", "value": 9.0},
+        {"type": "age", "op": "gte", "value": 18}
+      ]
+    }
+  ],
+  "observation_window": {"days_before": 365, "days_after": 0}
+}

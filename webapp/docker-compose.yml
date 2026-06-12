@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: webapp/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../synthea_omop_etl.duckdb:/data/duckdb/synthea.duckdb:ro
+      - ./data:/app/data
+    environment:
+      DUCKDB_PATH: /data/duckdb/synthea.duckdb
+      DUCKDB_SCHEMA: dbt_synthea_dev
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      BETA_PASSKEY: ${BETA_PASSKEY}
+      JWT_SECRET: ${JWT_SECRET:-changeme-jwt-secret}
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      DEFAULT_PROVIDER: claude
+      DEFAULT_MODEL: claude-sonnet-4-20250514
+      CORS_ORIGINS: '["http://localhost:3000","http://localhost:5173"]'
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy-data:/data
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  caddy-data:

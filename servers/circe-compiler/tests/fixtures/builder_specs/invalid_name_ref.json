@@ -1,0 +1,15 @@
+{
+  "concept_sets": [
+    {
+      "name": "Type 2 Diabetes",
+      "domain": "Condition",
+      "concepts": [
+        {"concept_id": 201826, "include_descendants": true}
+      ]
+    }
+  ],
+  "primary_criteria": {
+    "concept_set": "Nonexistent Set",
+    "first_occurrence": true
+  }
+}

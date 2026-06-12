@@ -1,0 +1,36 @@
+{
+  "concept_sets": [
+    {
+      "name": "Type 2 Diabetes",
+      "domain": "Condition",
+      "concepts": [
+        {"concept_id": 201826, "include_descendants": true}
+      ]
+    },
+    {
+      "name": "Metformin",
+      "domain": "Drug",
+      "concepts": [
+        {"concept_id": 1503297, "include_descendants": true}
+      ]
+    }
+  ],
+  "primary_criteria": {
+    "concept_set": "Type 2 Diabetes",
+    "first_occurrence": true
+  },
+  "inclusion_rules": [
+    {
+      "name": "Prior Metformin in Adults",
+      "concept_set": "Metformin",
+      "temporal": {"days_before": 365, "days_after": 0},
+      "occurrence": {"type": "at_least", "count": 1},
+      "demographic": {
+        "age_min": 18,
+        "age_max": 65,
+        "gender_concept_ids": [8507, 8532]
+      }
+    }
+  ],
+  "observation_window": {"days_before": 365, "days_after": 0}
+}

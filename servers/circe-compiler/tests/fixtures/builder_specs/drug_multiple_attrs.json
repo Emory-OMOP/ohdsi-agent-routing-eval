@@ -1,0 +1,30 @@
+{
+  "concept_sets": [
+    {
+      "name": "Type 2 Diabetes",
+      "domain": "Condition",
+      "concepts": [{"concept_id": 201826, "include_descendants": true}]
+    },
+    {
+      "name": "Metformin",
+      "domain": "Drug",
+      "concepts": [{"concept_id": 1503297, "include_descendants": true}]
+    }
+  ],
+  "primary_criteria": {
+    "concept_set": "Type 2 Diabetes",
+    "first_occurrence": true
+  },
+  "inclusion_rules": [
+    {
+      "name": "Metformin with supply and refills",
+      "concept_set": "Metformin",
+      "temporal": {"days_before": 365, "days_after": 0},
+      "attributes": [
+        {"type": "days_supply", "op": "gte", "value": 30},
+        {"type": "refills", "op": "gte", "value": 2}
+      ]
+    }
+  ],
+  "observation_window": {"days_before": 365, "days_after": 0}
+}

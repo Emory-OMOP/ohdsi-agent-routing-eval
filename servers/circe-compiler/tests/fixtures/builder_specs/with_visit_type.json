@@ -1,0 +1,24 @@
+{
+  "concept_sets": [
+    {
+      "name": "Type 2 Diabetes",
+      "domain": "Condition",
+      "concepts": [{"concept_id": 201826, "include_descendants": true}]
+    }
+  ],
+  "primary_criteria": {
+    "concept_set": "Type 2 Diabetes",
+    "first_occurrence": true
+  },
+  "inclusion_rules": [
+    {
+      "name": "Inpatient T2DM",
+      "concept_set": "Type 2 Diabetes",
+      "temporal": {"days_before": 365, "days_after": 0},
+      "attributes": [
+        {"type": "visit_type", "concept_ids": [9201]}
+      ]
+    }
+  ],
+  "observation_window": {"days_before": 365, "days_after": 0}
+}

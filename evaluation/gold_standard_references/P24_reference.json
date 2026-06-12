@@ -1,0 +1,57 @@
+{
+  "prompt_id": 24,
+  "description": "Top 10 condition_concept_ids by occurrence count",
+  "result_type": "ranked_list",
+  "ranked_items": [
+    {
+      "concept_id": 40481087,
+      "concept_name": "Viral sinusitis",
+      "count": 114889
+    },
+    {
+      "concept_id": 4112343,
+      "concept_name": "Acute viral pharyngitis",
+      "count": 66528
+    },
+    {
+      "concept_id": 260139,
+      "concept_name": "Acute bronchitis",
+      "count": 54500
+    },
+    {
+      "concept_id": 4217975,
+      "concept_name": "Normal pregnancy",
+      "count": 52568
+    },
+    {
+      "concept_id": 37018196,
+      "concept_name": "Prediabetes",
+      "count": 30431
+    },
+    {
+      "concept_id": 439777,
+      "concept_name": "Anemia",
+      "count": 30392
+    },
+    {
+      "concept_id": 320128,
+      "concept_name": "Essential hypertension",
+      "count": 27258
+    },
+    {
+      "concept_id": 257012,
+      "concept_name": "Chronic sinusitis",
+      "count": 21979
+    },
+    {
+      "concept_id": 372328,
+      "concept_name": "Otitis media",
+      "count": 20720
+    },
+    {
+      "concept_id": 4132891,
+      "concept_name": "Chronic low back pain",
+      "count": 19519
+    }
+  ]
+}

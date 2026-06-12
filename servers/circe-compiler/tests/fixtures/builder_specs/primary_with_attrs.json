@@ -1,0 +1,18 @@
+{
+  "concept_sets": [
+    {
+      "name": "HbA1c",
+      "domain": "Measurement",
+      "concepts": [{"concept_id": 3004410, "include_descendants": true}]
+    }
+  ],
+  "primary_criteria": {
+    "concept_set": "HbA1c",
+    "first_occurrence": true,
+    "attributes": [
+      {"type": "value_as_number", "op": "gte", "value": 6.5},
+      {"type": "unit", "concept_ids": [8713]}
+    ]
+  },
+  "observation_window": {"days_before": 365, "days_after": 0}
+}
