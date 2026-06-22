@@ -19,23 +19,23 @@
 
 | Model | n | PASS | PARTIAL | FAIL | Pass % | 95% CI | Pass+Partial % |
 |:------|--:|-----:|--------:|-----:|-------:|:------:|---------------:|
-| claude/claude-haiku-4-5-20251001 | 190 | 159 | 16 | 15 | 83.7% | [78.1%, 88.6%] | 92.1% |
-| claude/claude-sonnet-4-20250514 | 190 | 175 | 10 | 5 | 92.1% | [87.8%, 95.6%] | 97.4% |
-| ollama/qwen3:14b | 190 | 132 | 25 | 33 | 69.5% | [62.8%, 75.8%] | 82.6% |
-| ollama/qwen3:8b | 190 | 154 | 10 | 26 | 81.1% | [75.2%, 86.3%] | 86.3% |
+| claude/claude-haiku-4-5-20251001 | 190 | 159 | 16 | 15 | 83.7% | [77.8%, 88.2%] | 92.1% |
+| claude/claude-sonnet-4-20250514 | 190 | 175 | 10 | 5 | 92.1% | [87.4%, 95.1%] | 97.4% |
+| ollama/qwen3:14b | 190 | 132 | 25 | 33 | 69.5% | [62.6%, 75.6%] | 82.6% |
+| ollama/qwen3:8b | 190 | 154 | 10 | 26 | 81.1% | [74.9%, 86.0%] | 86.3% |
 
 ## Table 2: Pass Rate by Capability Category
 
 | Category | Name | Prompts | Scored | PASS | Pass % | 95% CI |
 |:---------|:-----|--------:|-------:|-----:|-------:|:------:|
-| C1 | Single Tool Selection | 6 | 120 | 119 | 99.2% | [96.1%, 100.0%] |
-| C2 | Tool Disambiguation | 4 | 80 | 79 | 98.8% | [94.2%, 100.0%] |
-| C3 | Intra-Server Chaining | 4 | 80 | 63 | 78.8% | [69.1%, 87.0%] |
-| C4 | Cross-Server Chaining | 6 | 140 | 121 | 86.4% | [80.2%, 91.6%] |
-| C5 | Parameter Construction | 4 | 100 | 24 | 24.0% | [16.2%, 32.8%] |
-| C6 | Graceful Degradation | 3 | 60 | 54 | 90.0% | [80.9%, 96.5%] |
-| C7 | Multi-Faceted Composition | 3 | 60 | 45 | 75.0% | [63.4%, 85.0%] |
-| C8 | Cohort Construction | 3 | 120 | 115 | 95.8% | [91.3%, 98.9%] |
+| C1 | Single Tool Selection | 6 | 120 | 119 | 99.2% | [95.5%, 99.8%] |
+| C2 | Tool Disambiguation | 4 | 80 | 79 | 98.8% | [93.3%, 99.7%] |
+| C3 | Intra-Server Chaining | 4 | 80 | 63 | 78.8% | [68.5%, 86.3%] |
+| C4 | Cross-Server Chaining | 6 | 140 | 121 | 86.4% | [79.8%, 91.1%] |
+| C5 | Parameter Construction | 4 | 100 | 24 | 24.0% | [16.7%, 33.3%] |
+| C6 | Graceful Degradation | 3 | 60 | 54 | 90.0% | [79.8%, 95.3%] |
+| C7 | Multi-Faceted Composition | 3 | 60 | 45 | 75.0% | [62.7%, 84.2%] |
+| C8 | Cohort Construction | 3 | 120 | 115 | 95.8% | [90.6%, 98.2%] |
 
 ## Table 3: Model Comparison Matrix
 
@@ -88,10 +88,10 @@
 
 | Model | n | PASS | Pass % | 95% CI |
 |:------|--:|-----:|-------:|:------:|
-| claude/claude-haiku-4-5-20251001 | 35 | 30 | 85.7% | [72.1%, 95.5%] |
-| claude/claude-sonnet-4-20250514 | 35 | 35 | 100.0% | [92.1%, 100.0%] |
-| ollama/qwen3:14b | 35 | 27 | 77.1% | [62.0%, 89.3%] |
-| ollama/qwen3:8b | 35 | 29 | 82.9% | [68.6%, 93.5%] |
+| claude/claude-haiku-4-5-20251001 | 35 | 30 | 85.7% | [70.5%, 93.6%] |
+| claude/claude-sonnet-4-20250514 | 35 | 35 | 100.0% | [90.3%, 99.9%] |
+| ollama/qwen3:14b | 35 | 27 | 77.1% | [60.9%, 87.9%] |
+| ollama/qwen3:8b | 35 | 29 | 82.9% | [67.2%, 91.8%] |
 
 ## Table 6: Parameter Correctness by Model
 
@@ -167,7 +167,16 @@ Mean proportion of unique tool-call sequences per prompt (1.0 = all runs identic
 
 ## Table 11: Pairwise Model Comparison (Fisher's Exact Test)
 
-*scipy not available — install with `uv add scipy` to enable this table.*
+Bonferroni-corrected significance threshold: p < 0.008333 (6 pairs).
+
+| Model A | Model B | Pass A | n A | Pass B | n B | p-value | Significant |
+|:--------|:--------|-------:|----:|-------:|----:|--------:|:------------|
+| claude/claude-haiku-4-5-20251001 | claude/claude-sonnet-4-20250514 | 159 | 190 | 175 | 190 | 0.017566 |  |
+| claude/claude-haiku-4-5-20251001 | ollama/qwen3:14b | 159 | 190 | 132 | 190 | 0.001547 | Yes |
+| claude/claude-haiku-4-5-20251001 | ollama/qwen3:8b | 159 | 190 | 154 | 190 | 0.590503 |  |
+| claude/claude-sonnet-4-20250514 | ollama/qwen3:14b | 175 | 190 | 132 | 190 | 0.000000 | Yes |
+| claude/claude-sonnet-4-20250514 | ollama/qwen3:8b | 175 | 190 | 154 | 190 | 0.002355 | Yes |
+| ollama/qwen3:14b | ollama/qwen3:8b | 132 | 190 | 154 | 190 | 0.012294 |  |
 
 ## Pre-study feasibility build (EXCLUDED from all study statistics)
 

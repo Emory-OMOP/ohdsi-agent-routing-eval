@@ -9,9 +9,9 @@ Reads all CSV files from results/, merges them, and outputs:
   6. Parameter correctness rates
   7. JAMIA-ready markdown tables
 
-Usage:
-    uv run python analyze_results.py
-    uv run python analyze_results.py --output report.md
+Usage (use `--with scipy` for the Fisher's exact table and exact Beta credible intervals):
+    uv run --with scipy python analyze_results.py
+    uv run --with scipy python analyze_results.py --output report.md
 """
 
 from __future__ import annotations
@@ -667,7 +667,8 @@ def table_fishers_exact(rows: list[dict]) -> str:
         from scipy.stats import fisher_exact
     except ImportError:
         return ("## Table 11: Pairwise Model Comparison (Fisher's Exact Test)\n\n"
-                "*scipy not available — install with `uv add scipy` to enable this table.*")
+                "*scipy not available — run with `uv run --with scipy python analyze_results.py` "
+                "to enable this table (also yields exact Beta credible intervals).*")
 
     by_model: dict[str, list[dict]] = defaultdict(list)
     for r in rows:

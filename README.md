@@ -124,7 +124,7 @@ Requires only `ANTHROPIC_API_KEY`, the DB on disk, and the stack running. Output
 cd evaluation
 uv run python score_results.py                                   # apply the codebook
 uv run python gold_standards.py score-all --db ../synthea_omop_etl.duckdb   # Tier B
-uv run python analyze_results.py                                 # regenerate the tables
+uv run --with scipy python analyze_results.py                    # regenerate the tables (scipy → Fisher table + exact Beta CIs)
 ```
 
 ### Full reproduction vs. smoke test
