@@ -46,6 +46,18 @@ CATEGORY_PROMPT_COUNTS = {
 # Cross-server category for dedicated analysis
 CROSS_SERVER_CATEGORY = "C4"
 
+# ── Study vs. pre-study model partition ──────────────────────────────────
+# The STUDY evaluated FOUR models. DeepSeek V3 was a PRE-STUDY feasibility build
+# (open condition only, runs truncated by API failures) used to assess whether a
+# third-party cloud model could be included. It is NOT part of the study and is
+# EXCLUDED from every study statistic; it is reported separately for transparency.
+STUDY_MODELS = {
+    "claude/claude-sonnet-4-20250514",
+    "claude/claude-haiku-4-5-20251001",
+    "ollama/qwen3:14b",
+    "ollama/qwen3:8b",
+}
+
 
 # ── Bayesian CI ──────────────────────────────────────────────────────────
 
@@ -114,6 +126,42 @@ def load_all_results(results_dir: Path) -> list[dict]:
 def model_key(row: dict) -> str:
     """Return a display key like 'ollama/qwen3:8b'."""
     return f"{row['provider']}/{row['model']}"
+
+
+def split_study_prestudy(rows: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Partition rows into the four study models vs. the pre-study pilot.
+
+    All study statistics are computed over the study rows only; the pre-study
+    feasibility build (DeepSeek V3) is reported separately and never folded into
+    a study aggregate or comparison.
+    """
+    study = [r for r in rows if model_key(r) in STUDY_MODELS]
+    prestudy = [r for r in rows if model_key(r) not in STUDY_MODELS]
+    return study, prestudy
+
+
+def prestudy_pilot_section(prestudy_rows: list[dict]) -> str:
+    """Report the pre-study feasibility build separately (excluded from study stats)."""
+    if not prestudy_rows:
+        return ""
+    lines = [
+        "## Pre-study feasibility build (EXCLUDED from all study statistics)",
+        "",
+        "DeepSeek V3 was run as a *pre-study feasibility build* to assess whether a "
+        "third-party cloud model could be included. It ran under the open condition "
+        "only, with runs truncated by API connection failures. It is **not** part of "
+        "the four-model study and is excluded from every table above.",
+        "",
+        "| Model (pre-study) | n | PASS | Pass % |",
+        "|:--|--:|--:|--:|",
+    ]
+    by_model: dict[str, list[dict]] = defaultdict(list)
+    for r in prestudy_rows:
+        by_model[model_key(r)].append(r)
+    for mk in sorted(by_model):
+        n, p, pct = pass_rate(by_model[mk])
+        lines.append(f"| {mk} | {n} | {p} | {pct}% |")
+    return "\n".join(lines)
 
 
 # ── Statistics helpers ───────────────────────────────────────────────────
@@ -775,43 +823,53 @@ def main() -> None:
         print(f"\nWARNING: {len(unreviewed)} unreviewed provisional rows included (--include-unreviewed)")
 
     print(f"\nTotal rows loaded: {len(rows)}")
+
+    # Partition: STUDY (four models) vs PRE-STUDY pilot (DeepSeek). All study
+    # tables below are computed over study rows ONLY; the pilot is reported
+    # separately and never folded into a study statistic.
+    study_rows, prestudy_rows = split_study_prestudy(rows)
+    print(f"Study rows: {len(study_rows)} ({len(set(model_key(r) for r in study_rows))} models); "
+          f"pre-study rows: {len(prestudy_rows)} ({len(set(model_key(r) for r in prestudy_rows))} models)")
     print()
 
-    # Build report
+    # Build report — STUDY statistics use study_rows only
     sections = [
         "# Multi-Model Routing Evaluation Report",
         "",
-        f"*{len(set(model_key(r) for r in rows))} models, "
-        f"{len(set(int(r['prompt_id']) for r in rows))} prompts, "
-        f"8 capability categories (C1-C8)*",
+        f"*{len(set(model_key(r) for r in study_rows))} study models, "
+        f"{len(set(int(r['prompt_id']) for r in study_rows))} prompts, "
+        f"8 capability categories (C1-C8). DeepSeek V3 (pre-study feasibility build) "
+        f"is reported separately and excluded from all study statistics.*",
         "",
-        summary_statistics(rows),
+        summary_statistics(study_rows),
         "",
-        table_pass_rate_by_model(rows),
+        table_pass_rate_by_model(study_rows),
         "",
-        table_pass_rate_by_category(rows),
+        table_pass_rate_by_category(study_rows),
         "",
-        table_model_comparison_matrix(rows),
+        table_model_comparison_matrix(study_rows),
         "",
-        table_latency_by_model(rows),
+        table_latency_by_model(study_rows),
         "",
-        table_cross_server_chains(rows),
+        table_cross_server_chains(study_rows),
         "",
-        table_parameter_correctness(rows),
+        table_parameter_correctness(study_rows),
         "",
-        table_failure_modes(rows),
+        table_failure_modes(study_rows),
         "",
-        table_open_vs_guided(rows),
+        table_open_vs_guided(study_rows),
         "",
-        table_pass_rate_by_model_temperature(rows),
+        table_pass_rate_by_model_temperature(study_rows),
         "",
-        table_pass_rate_by_category_temperature(rows),
+        table_pass_rate_by_category_temperature(study_rows),
         "",
-        table_trajectory_diversity(rows),
+        table_trajectory_diversity(study_rows),
         "",
-        table_temperature_sensitivity(rows),
+        table_temperature_sensitivity(study_rows),
         "",
-        table_fishers_exact(rows),
+        table_fishers_exact(study_rows),
+        "",
+        prestudy_pilot_section(prestudy_rows),
     ]
 
     report = "\n".join(sections) + "\n"
