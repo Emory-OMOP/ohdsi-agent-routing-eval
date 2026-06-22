@@ -441,6 +441,20 @@ def table_failure_modes(rows: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def _fisher_p(a: int, b: int, c: int, d: int):
+    """Two-sided Fisher's exact p-value for the 2x2 table [[a, b], [c, d]].
+
+    Returns the p-value, or None if scipy is unavailable (run with
+    `uv run --with scipy` to enable). Same dependency handling as Table 11.
+    """
+    try:
+        from scipy.stats import fisher_exact
+    except ImportError:
+        return None
+    _, p = fisher_exact([[a, b], [c, d]])
+    return p
+
+
 def table_open_vs_guided(rows: list[dict]) -> str:
     """Table: Open vs Guided condition comparison by model (guided prompts only)."""
     # Guided prompts are P19, P21, P31, P32, P33
@@ -464,8 +478,8 @@ def table_open_vs_guided(rows: list[dict]) -> str:
         "",
         "Guided prompts (P19, P21, P31-P33): raw SQL hidden, forcing structured tool paths.",
         "",
-        "| Model | Open Pass % (n) | Guided Pass % (n) | Delta |",
-        "|:------|----------------:|-------------------:|------:|",
+        "| Model | Open Pass % (n) | Guided Pass % (n) | Delta | p (Fisher) |",
+        "|:------|----------------:|-------------------:|------:|-----------:|",
     ]
 
     for mk in sorted(by_model):
@@ -491,11 +505,54 @@ def table_open_vs_guided(rows: list[dict]) -> str:
         if open_rows and guided_rows:
             delta = round(g_pct - o_pct, 1)
             d_str = f"{delta:+.1f}pp"
+            o_fail = len(open_rows) - op
+            g_fail = len(guided_rows) - gp
+            pv = _fisher_p(op, o_fail, gp, g_fail)
+            p_str = f"{pv:.4f}" if pv is not None else "(scipy)"
         else:
             d_str = "-"
+            p_str = "-"
 
-        lines.append(f"| {mk} | {o_str} | {g_str} | {d_str} |")
+        lines.append(f"| {mk} | {o_str} | {g_str} | {d_str} | {p_str} |")
 
+    return "\n".join(lines)
+
+
+def table_category_contrasts(rows: list[dict]) -> str:
+    """Table 12: Fisher's exact test of C5 (the lowest-performing category) against
+    every other capability category's pass rate."""
+    by_cat: dict[str, list[dict]] = defaultdict(list)
+    for r in rows:
+        if r.get("result") in ("PASS", "PARTIAL", "FAIL"):
+            by_cat[r.get("category_code", "?")].append(r)
+
+    def pf(cat: str) -> tuple[int, int, int]:
+        rs = by_cat.get(cat, [])
+        p = sum(1 for r in rs if r["result"] == "PASS")
+        return p, len(rs) - p, len(rs)
+
+    if "C5" not in by_cat:
+        return "## Table 12: Category Contrasts vs C5\n\nNo C5 data."
+
+    c5_pass, c5_fail, c5_n = pf("C5")
+    c5_pct = round(c5_pass / c5_n * 100, 1) if c5_n else 0
+    lines = [
+        "## Table 12: Category Contrasts (Fisher's Exact Test vs C5)",
+        "",
+        "C5 (Parameter Construction) is the lowest-performing category; each row tests "
+        "its pass rate against another category.",
+        "",
+        "| Category | Pass % | C5 Pass % | p-value |",
+        "|:---------|-------:|----------:|--------:|",
+    ]
+    for cat in [f"C{i}" for i in range(1, 9)]:
+        if cat == "C5" or cat not in by_cat:
+            continue
+        cp, cf, cn = pf(cat)
+        cpct = round(cp / cn * 100, 1) if cn else 0
+        pv = _fisher_p(cp, cf, c5_pass, c5_fail)
+        p_str = f"{pv:.2e}" if pv is not None else "(scipy)"
+        lines.append(f"| {cat} ({CATEGORY_NAMES.get(cat, cat)}) | {cpct}% | {c5_pct}% | {p_str} |")
     return "\n".join(lines)
 
 
@@ -869,6 +926,8 @@ def main() -> None:
         table_temperature_sensitivity(study_rows),
         "",
         table_fishers_exact(study_rows),
+        "",
+        table_category_contrasts(study_rows),
         "",
         prestudy_pilot_section(prestudy_rows),
     ]

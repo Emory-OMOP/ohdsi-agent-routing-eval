@@ -116,12 +116,12 @@
 
 Guided prompts (P19, P21, P31-P33): raw SQL hidden, forcing structured tool paths.
 
-| Model | Open Pass % (n) | Guided Pass % (n) | Delta |
-|:------|----------------:|-------------------:|------:|
-| claude/claude-haiku-4-5-20251001 | 80.0% (20/25) | 80.0% (20/25) | +0.0pp |
-| claude/claude-sonnet-4-20250514 | 100.0% (25/25) | 80.0% (20/25) | -20.0pp |
-| ollama/qwen3:14b | 80.0% (20/25) | 96.0% (24/25) | +16.0pp |
-| ollama/qwen3:8b | 80.0% (20/25) | 80.0% (20/25) | +0.0pp |
+| Model | Open Pass % (n) | Guided Pass % (n) | Delta | p (Fisher) |
+|:------|----------------:|-------------------:|------:|-----------:|
+| claude/claude-haiku-4-5-20251001 | 80.0% (20/25) | 80.0% (20/25) | +0.0pp | 1.0000 |
+| claude/claude-sonnet-4-20250514 | 100.0% (25/25) | 80.0% (20/25) | -20.0pp | 0.0502 |
+| ollama/qwen3:14b | 80.0% (20/25) | 96.0% (24/25) | +16.0pp | 0.1895 |
+| ollama/qwen3:8b | 80.0% (20/25) | 80.0% (20/25) | +0.0pp | 1.0000 |
 
 ## Table 7: Pass Rate by Model × Temperature
 
@@ -177,6 +177,20 @@ Bonferroni-corrected significance threshold: p < 0.008333 (6 pairs).
 | claude/claude-sonnet-4-20250514 | ollama/qwen3:14b | 175 | 190 | 132 | 190 | 0.000000 | Yes |
 | claude/claude-sonnet-4-20250514 | ollama/qwen3:8b | 175 | 190 | 154 | 190 | 0.002355 | Yes |
 | ollama/qwen3:14b | ollama/qwen3:8b | 132 | 190 | 154 | 190 | 0.012294 |  |
+
+## Table 12: Category Contrasts (Fisher's Exact Test vs C5)
+
+C5 (Parameter Construction) is the lowest-performing category; each row tests its pass rate against another category.
+
+| Category | Pass % | C5 Pass % | p-value |
+|:---------|-------:|----------:|--------:|
+| C1 (Single Tool Selection) | 99.2% | 24.0% | 2.35e-36 |
+| C2 (Tool Disambiguation) | 98.8% | 24.0% | 6.00e-28 |
+| C3 (Intra-Server Chaining) | 78.8% | 24.0% | 1.45e-13 |
+| C4 (Cross-Server Chaining) | 86.4% | 24.0% | 2.48e-23 |
+| C6 (Graceful Degradation) | 90.0% | 24.0% | 5.12e-17 |
+| C7 (Multi-Faceted Composition) | 75.0% | 24.0% | 3.48e-10 |
+| C8 (Cohort Construction) | 95.8% | 24.0% | 3.76e-31 |
 
 ## Pre-study feasibility build (EXCLUDED from all study statistics)
 
